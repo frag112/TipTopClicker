@@ -11,11 +11,11 @@ public TMP_Text _currentCount;
 public void UpdateCounter(){
 _counter+=(1*_multiplierBasic);
 _currentCount.text = _counter.ToString();
-//Saver.Instance._data.currentAmoutCliks = _counter;
-//Saver.Instance.SaveData();
+DataHandler.Instance.data.currentAmoutCliks = _counter;
+
 }
 void Start(){
-  //  _counter = Saver.Instance._data.currentAmoutCliks;
-    _currentCount.text = _counter.ToString();
+    _counter = DataHandler.Instance.data.currentAmoutCliks;
+        _currentCount.text = _counter.ToString();
 }
 }

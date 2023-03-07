@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using UnityEngine.Networking;
-using DataManagement;
 // задачи у класса -
 // сохранять игру на сервер яндекса после каждого клика
 // загружать при запуске
