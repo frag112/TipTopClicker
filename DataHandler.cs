@@ -10,6 +10,8 @@ public class DataHandler : MonoBehaviour
     [SerializeField] string SaveName = "Save";
     public static DataHandler Instance;
 
+public delegate void FilesAction();
+public static event FilesAction OnSave;
     public PlayerData data;
     private void Awake()
     {
@@ -60,6 +62,12 @@ public class DataHandler : MonoBehaviour
 #elif UNITY_WEBGL
     Debug.Log("Unity WebGL saving data man, saving it all!");
 #endif
+        if (OnSave != null)
+        {
+            OnSave();
+        }
+
+
     }
     public void BuildPrestigeLeaderboard()
     {
