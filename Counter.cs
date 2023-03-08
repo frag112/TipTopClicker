@@ -1,21 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 public class Counter : MonoBehaviour
 {
-public int _counter;
-public int _multiplierBasic;
-public TMP_Text _currentCount;
-public void UpdateCounter(){
-_counter+=(1*_multiplierBasic);
-_currentCount.text = _counter.ToString();
-DataHandler.Instance.data.currentAmoutCliks = _counter;
+    public delegate void ClickAction();
+    public static event ClickAction OnClicked;
+    public void UpdateCounter()
+    {
+        if (OnClicked!=null){
+            OnClicked();
+        }
+        DataHandler.Instance.data.currentAmoutCliks += (1 * DataHandler.Instance.data.currentMultiplier);
 
-}
-void Start(){
-    _counter = DataHandler.Instance.data.currentAmoutCliks;
-        _currentCount.text = _counter.ToString();
-}
+    }
+    void CalculateFormula(){
+
+    }
 }

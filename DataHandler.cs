@@ -30,8 +30,18 @@ public class DataHandler : MonoBehaviour
     }
     public void LoadData()
     {
-        string fileContent = File.ReadAllText(Application.persistentDataPath + Path.DirectorySeparatorChar + SaveName + ".json");
-        data = JsonUtility.FromJson<PlayerData>(fileContent);
+#if UNITY_EDITOR
+        string filePath = Application.persistentDataPath + Path.DirectorySeparatorChar + SaveName + ".json";
+        if (File.Exists(filePath))
+        {
+            string fileContent = File.ReadAllText(filePath);
+            data = JsonUtility.FromJson<PlayerData>(fileContent);
+        }else{
+            data = new PlayerData();
+        }
+#elif UNITY_WEBGL
+        Debug.Log("Unity WebGL is loading your data");
+#endif
     }
     IEnumerator SavingRoutine()
     {
