@@ -9,12 +9,13 @@ public class Counter : MonoBehaviour
     [Range(2, 6)]
     [SerializeField] private int powerMultiplier = 2;
     [Range(2, 20)]
-    [SerializeField] private int divisionMultiplier = 7;
-    [SerializeField]private int totalMultiplier;
+    [SerializeField] private float divisionMultiplier = 7f;
+    [SerializeField] private int totalMultiplier;
     public delegate void ClickAction();
     public static event ClickAction OnClicked;
     public static event ClickAction OnLvlUp;
-    void Start(){
+    void Start()
+    {
         DataHandler.Instance.data.requiredXP = CalculateRequiredXP();
     }
     public void UpdateCounter()
@@ -41,7 +42,7 @@ public class Counter : MonoBehaviour
         DataHandler.Instance.data.currentLvl++;
         DataHandler.Instance.data.currentLevelProgress = Mathf.RoundToInt(DataHandler.Instance.data.currentLevelProgress - DataHandler.Instance.data.requiredXP);
         DataHandler.Instance.data.requiredXP = CalculateRequiredXP();
-                if (OnLvlUp != null)
+        if (OnLvlUp != null)
         {
             OnLvlUp();
         }
@@ -49,10 +50,10 @@ public class Counter : MonoBehaviour
     private int CalculateRequiredXP()
     {
         int solveForRequiredXP = 0;
-        for (int levelCycle = 1; levelCycle <= DataHandler.Instance.data.currentLvl; levelCycle++)
+        if (DataHandler.Instance.data.currentLvl <= 100)
         {
-            solveForRequiredXP += (int)Mathf.Floor(levelCycle + addintionalMultiplier * Mathf.Pow(powerMultiplier, levelCycle / divisionMultiplier));
+            solveForRequiredXP = Mathf.FloorToInt(DataHandler.Instance.data.currentLvl + addintionalMultiplier * Mathf.Pow(powerMultiplier, DataHandler.Instance.data.currentLvl / divisionMultiplier));
         }
-        return solveForRequiredXP / 4;
+        return solveForRequiredXP;
     }
 }
