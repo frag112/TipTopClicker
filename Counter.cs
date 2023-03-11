@@ -5,6 +5,7 @@ public class Counter : MonoBehaviour
 {
     [Header("Bonus Multipliers")]
     bool levelUpBonus;
+    public float timeThreshold, frenzyBar;// frenzy bar is  invisible bar that can be filled by pressing button
     int frenzyBonus, totalMultiplier;
     [Header("Level Multipliers")]
     [Range(1, 500)]
@@ -21,9 +22,21 @@ public class Counter : MonoBehaviour
     {
         DataHandler.Instance.data.requiredXP = CalculateRequiredXP();
     }
+    void Update()
+    {
+        timeThreshold += Time.deltaTime;
+        if (timeThreshold > .5f)
+        {
+            timeThreshold = 0;
+            frenzyBar -= .30f;
+        }
+        if (frenzyBar < 0) frenzyBar = 0;
+        if (frenzyBar > 2) frenzyBar = 2;
+    }
     public void UpdateCounter()
     {
-        //totalMultiplier = (1 * DataHandler.Instance.data.currentMultiplier);
+        if(frenzyBar<1)frenzyBar += .12f;
+        if (frenzyBar>=1)frenzyBar += .22f;
         CalculateFormula();
         DataHandler.Instance.data.currentAmoutCliks += totalMultiplier;
         DataHandler.Instance.data.globalAmountClicks += totalMultiplier;
@@ -46,7 +59,18 @@ public class Counter : MonoBehaviour
             totalMultiplier += (int)(baseValue * 0.45f);
         }
         //if (frenzy bonus) add more frenzy points
+        switch (frenzyBar)
+        {
+            case 1:
+                totalMultiplier += (int)(baseValue * .35f);
+                break;
+            case 2:
+                totalMultiplier += (int)(baseValue * .7f);
+                break;
+            default:
+                break;
         }
+    }
     void CalculatePrestigeBonus()
     {
         if (DataHandler.Instance.data.currentPrestige > 0)
@@ -90,7 +114,8 @@ public class Counter : MonoBehaviour
             }
         }
     }
-    IEnumerator LevelUpBonusCountDown(){
+    IEnumerator LevelUpBonusCountDown()
+    {
         levelUpBonus = true;
         yield return new WaitForSeconds(10f);
         levelUpBonus = false;
