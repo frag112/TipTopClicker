@@ -31,7 +31,7 @@ public class Counter : MonoBehaviour
             frenzyBar -= .30f;
         }
         if (frenzyBar < 0) frenzyBar = 0;
-        if (frenzyBar > 2) frenzyBar = 2;
+        if (frenzyBar > 5) frenzyBar = 5;
     }
     public void UpdateCounter()
     {
@@ -142,8 +142,9 @@ public class Counter : MonoBehaviour
     int CalculateRequiredXP()
     {
         int solveForRequiredXP = 0;
-        //solveForRequiredXP = Mathf.FloorToInt(DataHandler.Instance.data.currentLvl + addintionalMultiplier * Mathf.Pow(powerMultiplier, DataHandler.Instance.data.currentLvl / divisionMultiplier)); // multiply by prestige bonus
-        solveForRequiredXP = Mathf.FloorToInt(DataHandler.Instance.data.currentLvl + (100 + DataHandler.Instance.data.currentPrestigeBonus) * Mathf.Pow(2, DataHandler.Instance.data.currentLvl / 6.7f)); // multiply by prestige bonus
+        //solveForRequiredXP = Mathf.FloorToInt(DataHandler.Instance.data.currentLvl + addintionalMultiplier * Mathf.Pow(powerMultiplier, DataHandler.Instance.data.currentLvl / divisionMultiplier)); 
+        // поправить формулу,  итог = вычисления + (вычисления * престиж %)
+        solveForRequiredXP = Mathf.FloorToInt(DataHandler.Instance.data.currentLvl + (100 + DataHandler.Instance.data.currentPrestigeBonus) * Mathf.Pow(2, DataHandler.Instance.data.currentLvl / 6.7f));
         return solveForRequiredXP;
     }
 }
