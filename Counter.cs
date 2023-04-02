@@ -20,11 +20,16 @@ public class Counter : MonoBehaviour
     public static event ClickAction OnClicked;
     public static event ClickAction OnLvlUp;
     public static event ClickAction OnlvlHundred;
+    public static event ClickAction OnStoreUpdate;
     void Start()
     {
         DataHandler.Instance.data.requiredXP = CalculateRequiredXP();
         CalculateClickUpgradeCost();
     }
+    // public void GameRated()
+    // {
+    //     DataHandler.Instance.data.gameRated = true;
+    // }
     void Update()
     {
         timeThreshold += Time.deltaTime;
@@ -35,6 +40,8 @@ public class Counter : MonoBehaviour
         }
         if (frenzyBar < 0) frenzyBar = 0;
         if (frenzyBar > 5) frenzyBar = 5;
+        if (frenzyBar > 1.9f) DataHandler.Instance.frenzy = true;
+        else DataHandler.Instance.frenzy = false;
     }
     public void UpdateCounter()
     {
@@ -52,6 +59,10 @@ public class Counter : MonoBehaviour
     void CalculateFormula()
     {
         var baseValue = DataHandler.Instance.data.currentMultiplier * 1;
+        // if (DataHandler.Instance.data.gameRated)
+        // {
+        //     baseValue += (int)(DataHandler.Instance.data.currentMultiplier * .1f);
+        // }
         totalMultiplier = baseValue;
         if (DataHandler.Instance.data.currentPrestigeBonus != 0)
         {
@@ -62,17 +73,9 @@ public class Counter : MonoBehaviour
             totalMultiplier += (int)(baseValue * 0.45f);
         }
         //if (frenzy bonus) add more frenzy points
-        switch (frenzyBar)
-        {
-            case 1:
-                totalMultiplier += (int)(baseValue * .35f);
-                break;
-            case 2:
-                totalMultiplier += (int)(baseValue * .7f);
-                break;
-            default:
-                break;
-        }
+        if (frenzyBar > 3) totalMultiplier += (int)(baseValue * .35f);
+
+        else if (frenzyBar > 1.8) totalMultiplier += (int)(baseValue * .7f);
     }
     void CalculatePrestigeBonus()
     {
@@ -155,18 +158,25 @@ public class Counter : MonoBehaviour
     {
         // rint(x+50*(3^(x/11.1)))
         clickCost = Mathf.FloorToInt(DataHandler.Instance.data.clickUpgradeID + 50 * Mathf.Pow(3, DataHandler.Instance.data.clickUpgradeID / 11.1f));
+        DataHandler.Instance.data.nextUpgradeClicksCost = clickCost;
         // rint(x+1*(2^(x/8.3)))
 
         clickUpgrade = Mathf.FloorToInt(DataHandler.Instance.data.clickUpgradeID + 1 * Mathf.Pow(2, DataHandler.Instance.data.clickUpgradeID / 8.3f));
+         DataHandler.Instance.data.nextClicksAmount = clickUpgrade;
     }
     public void BuyClickMultiplier()
     {
         DataHandler.Instance.data.clickUpgradeID++;
         DataHandler.Instance.data.currentAmoutCliks -= clickCost;
-        var uncut = DataHandler.Instance.data.clickUpgradeID + 50 * Mathf.Pow(3, DataHandler.Instance.data.clickUpgradeID / 11.1f);
-        string output = ($"buy id ={DataHandler.Instance.data.clickUpgradeID}; cost ={clickCost}; value ={clickUpgrade}; and it can be ={uncut}");
-        print(output);
+        DataHandler.Instance.data.currentMultiplier = DataHandler.Instance.data.nextClicksAmount;
+        //var uncut = DataHandler.Instance.data.clickUpgradeID + 50 * Mathf.Pow(3, DataHandler.Instance.data.clickUpgradeID / 11.1f);
+        // string output = ($"buy id ={DataHandler.Instance.data.clickUpgradeID}; cost ={clickCost}; value ={clickUpgrade}; and it can be ={uncut}");
+        // print(output);
         CalculateClickUpgradeCost();
+        if (OnStoreUpdate != null)
+        {
+            OnStoreUpdate();
+        }
         if (OnClicked != null)
         {
             OnClicked();

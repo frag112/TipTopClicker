@@ -23,6 +23,7 @@ public class UIHandler : MonoBehaviour
     [SerializeField] GameObject lvlUpBonus;
     //public bool canShowlvlUpBonus = false;
     [SerializeField] GameObject frenzyBonus;
+    [SerializeField] GameObject permanentBonus;
 
     [Header("Store Panel")]
     [SerializeField] Image storeIcon;
@@ -42,6 +43,7 @@ public class UIHandler : MonoBehaviour
         Counter.OnLvlUp += LevelUpdated;
         DataHandler.OnSave += ShowSaveLabel;
         Counter.OnlvlHundred += AbleToPrestige;
+        Counter.OnStoreUpdate += UpdateStore;
     }
     void OnDisable()
     {
@@ -49,6 +51,7 @@ public class UIHandler : MonoBehaviour
         Counter.OnLvlUp -= LevelUpdated;
         Counter.OnlvlHundred -= AbleToPrestige;
         DataHandler.OnSave -= ShowSaveLabel;
+        Counter.OnStoreUpdate -= UpdateStore;
     }
     void Update()
     {
@@ -61,17 +64,30 @@ public class UIHandler : MonoBehaviour
     void Start()
     {
         upgradeClick.Start();
-        //upgradeClick.UpdateValues();
+        upgradeClick.UpdateValues(DataHandler.Instance.data.nextUpgradeClicksCost, DataHandler.Instance.data.nextClicksAmount);
         UpdateCountersTexts();
         UpdateLevelText();
         UpdatePrestigeBonus();
         if (DataHandler.Instance.data.storeAvailable) storeIcon.enabled = true;
+    }
+    void UpdateStore()
+    {
+        upgradeClick.UpdateValues(DataHandler.Instance.data.nextUpgradeClicksCost, DataHandler.Instance.data.nextClicksAmount);
     }
     void UpdateCountersTexts()
     {
         currentAmountClicks.text = DataHandler.Instance.data.currentAmoutCliks.ToString();
         levelProgressTextP.text = DataHandler.Instance.data.currentLevelProgress + "/" + DataHandler.Instance.data.requiredXP;
         globalClickCountText.text = DataHandler.Instance.data.globalAmountClicks.ToString();
+
+        if (DataHandler.Instance.data.currentAmoutCliks >= DataHandler.Instance.data.nextUpgradeClicksCost)
+        {
+            upgradeClick.ChangeState(mainColor, true);
+        }
+        else
+        {
+            upgradeClick.ChangeState(secondaryColor, false);
+        }
     }
     void AbleToPrestige()
     {
@@ -85,6 +101,10 @@ public class UIHandler : MonoBehaviour
             prestigeBonus.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "+ " + DataHandler.Instance.data.currentPrestigeBonus + "%";
 
         }
+    }
+    public void ShowPermanentBonus()
+    {
+        //permanentBonus.SetActive(true);
     }
     void LevelUpdated()
     {
@@ -146,28 +166,22 @@ class StoreEntry
         this.cost.text = cost.ToString();
         if (value > 0)
         {
-            mainText.text = text + $" X{cost}";
+            mainText.text = text + $" X{value}";
         }
+
     }
 
     public void RemoveLock()
     {
         // for the vault and speed -  removing the lock from buy button
     }
-    public void ChangeState(Color newColor)
+    public void ChangeState(Color newColor, bool state)
     {
         mainText.color = newColor;
         description.color = newColor;
         buyButton.color = newColor;
         cost.color = newColor;
 
-        if (button.enabled)
-        {
-            button.enabled = false;
-        }
-        else
-        {
-            button.enabled = true;
-        }
+        button.enabled = state;
     }
 }
