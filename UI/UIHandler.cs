@@ -8,7 +8,7 @@ public class UIHandler : MonoBehaviour
 {
     [Header("Design Colors")]
     [SerializeField] Color mainColor;
-    [SerializeField] Color activeColor;
+    [SerializeField] Color additionalColor;
     [SerializeField] Color secondaryColor;
     [SerializeField] Color backgroundColor;
     [Header("Top Panel")] //T panel
@@ -25,12 +25,10 @@ public class UIHandler : MonoBehaviour
     [SerializeField] GameObject frenzyBonus;
 
     [Header("Store Panel")]
-    [SerializeField] GameObject upgradeClick;
-    List<GameObject> ClickChildren = new List<GameObject>();
-    [SerializeField] TextMeshProUGUI upgradeVaultText;
-    [SerializeField] TextMeshProUGUI upgradeVaultCost;
-    [SerializeField] TextMeshProUGUI upgradeSpeedText;
-    [SerializeField] TextMeshProUGUI upgradeSpeedCost;
+    [SerializeField] Image storeIcon;
+    [SerializeField] StoreEntry upgradeClick;
+    [SerializeField] StoreEntry upgradeVault;
+    [SerializeField] StoreEntry upgradeSpeed;
     [Header("Prestige Panel")] // P panel
     [SerializeField] TextMeshProUGUI globalClickCountText;
     [SerializeField] TextMeshProUGUI levelTextP; // большая п в конце это принадлежность к панели престиж
@@ -41,7 +39,6 @@ public class UIHandler : MonoBehaviour
     void OnEnable()
     {
         Counter.OnClicked += UpdateCountersTexts;
-        Counter.OnClicked += CheckStoreAvailability;
         Counter.OnLvlUp += LevelUpdated;
         DataHandler.OnSave += ShowSaveLabel;
         Counter.OnlvlHundred += AbleToPrestige;
@@ -49,30 +46,26 @@ public class UIHandler : MonoBehaviour
     void OnDisable()
     {
         Counter.OnClicked -= UpdateCountersTexts;
-        Counter.OnClicked -= CheckStoreAvailability;
         Counter.OnLvlUp -= LevelUpdated;
         Counter.OnlvlHundred -= AbleToPrestige;
         DataHandler.OnSave -= ShowSaveLabel;
     }
+    void Update()
+    {
+        if (DataHandler.Instance.data.storeAvailable == false && DataHandler.Instance.data.currentPrestige == 0 && DataHandler.Instance.data.currentAmoutCliks >= 50)
+        {
+            storeIcon.enabled = true;
+            DataHandler.Instance.data.storeAvailable = true;
+        }
+    }
     void Start()
     {
+        upgradeClick.Start();
+        //upgradeClick.UpdateValues();
         UpdateCountersTexts();
         UpdateLevelText();
-        CollectChildren(upgradeClick, ClickChildren);
         UpdatePrestigeBonus();
-    }
-    void CollectChildren(GameObject father, List<GameObject> children)
-    {
-        var imageArray = father.GetComponentsInChildren<Image>();
-        foreach (var element in imageArray)
-        {
-            children.Add(element.gameObject);
-        }
-        var textArray = father.GetComponentsInChildren<TextMeshProUGUI>();
-        foreach (var element in textArray)
-        {
-            children.Add(element.gameObject);
-        }
+        if (DataHandler.Instance.data.storeAvailable) storeIcon.enabled = true;
     }
     void UpdateCountersTexts()
     {
@@ -116,37 +109,6 @@ public class UIHandler : MonoBehaviour
         }
         lvlUpBonus.SetActive(false);
     }
-    void CheckStoreAvailability() // цвет меняется но альфа падает в ноль, нужно поправить ее тоже
-    {
-        if (DataHandler.Instance.data.currentAmoutCliks < 100)
-        {
-            foreach (var element in ClickChildren)
-            {
-                if (element.GetComponent<Image>() != null)
-                {
-                    element.GetComponent<Image>().color = mainColor;
-                }
-                if (element.GetComponent<TextMeshProUGUI>() != null)
-                {
-                    element.GetComponent<TextMeshProUGUI>().color = mainColor;
-                }
-            }
-        }
-        else
-        {
-            foreach (var element in ClickChildren)
-            {
-                if (element.GetComponent<Image>() != null)
-                {
-                    element.GetComponent<Image>().color = activeColor;
-                }
-                if (element.GetComponent<TextMeshProUGUI>() != null)
-                {
-                    element.GetComponent<TextMeshProUGUI>().color = activeColor;
-                }
-            }
-        }
-    }
     void ShowSaveLabel()
     {
         saveLabel.enabled = true;
@@ -157,4 +119,55 @@ public class UIHandler : MonoBehaviour
         saveLabel.enabled = false;
     }
 
+}
+
+[System.Serializable]
+class StoreEntry
+{
+    public GameObject entry;
+    public string text;
+    private TextMeshProUGUI mainText, description, cost;
+    private Button button;
+    private Image buyButton, lockImage;
+    public void Start()
+    {
+        var textholder = entry.transform.GetChild(0);
+
+        mainText = textholder.GetChild(0).GetComponent<TextMeshProUGUI>();
+        description = textholder.GetChild(1).GetComponent<TextMeshProUGUI>();
+        button = entry.GetComponentInChildren<Button>();
+        cost = button.GetComponentInChildren<TextMeshProUGUI>();
+        buyButton = button.transform.GetComponent<Image>();
+        lockImage = entry.transform.GetChild(2).GetComponent<Image>();
+
+    }
+    public void UpdateValues(int cost, int value = 0)
+    {
+        this.cost.text = cost.ToString();
+        if (value > 0)
+        {
+            mainText.text = text + $" X{cost}";
+        }
+    }
+
+    public void RemoveLock()
+    {
+        // for the vault and speed -  removing the lock from buy button
+    }
+    public void ChangeState(Color newColor)
+    {
+        mainText.color = newColor;
+        description.color = newColor;
+        buyButton.color = newColor;
+        cost.color = newColor;
+
+        if (button.enabled)
+        {
+            button.enabled = false;
+        }
+        else
+        {
+            button.enabled = true;
+        }
+    }
 }

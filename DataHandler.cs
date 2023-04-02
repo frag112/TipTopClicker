@@ -69,13 +69,4 @@ public static event FilesAction OnSave;
 
 
     }
-    public void BuildPrestigeLeaderboard()
-    {
-        // берет данные с сервера и возвращает таблицу в нужном формате
-    }
-    public void BuildClickLeaderboard()
-    {
-        // берет данные с сервера и возвращает таблицу в нужном формате
-    }
-
 }

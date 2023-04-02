@@ -7,6 +7,7 @@ public class Counter : MonoBehaviour
     bool levelUpBonus;
     public float timeThreshold, frenzyBar;// frenzy bar is  invisible bar that can be filled by pressing button
     int frenzyBonus, totalMultiplier;
+
     [Header("Level Multipliers")]
     [Range(1, 500)]
     [SerializeField] private int addintionalMultiplier = 300;
@@ -14,6 +15,7 @@ public class Counter : MonoBehaviour
     [SerializeField] private int powerMultiplier = 2;
     [Range(2, 20)]
     [SerializeField] private float divisionMultiplier = 7f;
+    public int clickCost, clickUpgrade;
     public delegate void ClickAction();
     public static event ClickAction OnClicked;
     public static event ClickAction OnLvlUp;
@@ -21,6 +23,7 @@ public class Counter : MonoBehaviour
     void Start()
     {
         DataHandler.Instance.data.requiredXP = CalculateRequiredXP();
+        CalculateClickUpgradeCost();
     }
     void Update()
     {
@@ -35,8 +38,8 @@ public class Counter : MonoBehaviour
     }
     public void UpdateCounter()
     {
-        if(frenzyBar<1)frenzyBar += .12f;
-        if (frenzyBar>=1)frenzyBar += .22f;
+        if (frenzyBar < 1) frenzyBar += .12f;
+        if (frenzyBar >= 1) frenzyBar += .22f;
         CalculateFormula();
         DataHandler.Instance.data.currentAmoutCliks += totalMultiplier;
         DataHandler.Instance.data.globalAmountClicks += totalMultiplier;
@@ -146,5 +149,27 @@ public class Counter : MonoBehaviour
         // поправить формулу,  итог = вычисления + (вычисления * престиж %)
         solveForRequiredXP = Mathf.FloorToInt(DataHandler.Instance.data.currentLvl + (100 + DataHandler.Instance.data.currentPrestigeBonus) * Mathf.Pow(2, DataHandler.Instance.data.currentLvl / 6.7f));
         return solveForRequiredXP;
+    }
+
+    public void CalculateClickUpgradeCost()
+    {
+        // rint(x+50*(3^(x/11.1)))
+        clickCost = Mathf.FloorToInt(DataHandler.Instance.data.clickUpgradeID + 50 * Mathf.Pow(3, DataHandler.Instance.data.clickUpgradeID / 11.1f));
+        // rint(x+1*(2^(x/8.3)))
+
+        clickUpgrade = Mathf.FloorToInt(DataHandler.Instance.data.clickUpgradeID + 1 * Mathf.Pow(2, DataHandler.Instance.data.clickUpgradeID / 8.3f));
+    }
+    public void BuyClickMultiplier()
+    {
+        DataHandler.Instance.data.clickUpgradeID++;
+        DataHandler.Instance.data.currentAmoutCliks -= clickCost;
+        var uncut = DataHandler.Instance.data.clickUpgradeID + 50 * Mathf.Pow(3, DataHandler.Instance.data.clickUpgradeID / 11.1f);
+        string output = ($"buy id ={DataHandler.Instance.data.clickUpgradeID}; cost ={clickCost}; value ={clickUpgrade}; and it can be ={uncut}");
+        print(output);
+        CalculateClickUpgradeCost();
+        if (OnClicked != null)
+        {
+            OnClicked();
+        }
     }
 }

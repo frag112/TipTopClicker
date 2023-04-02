@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 [System.Serializable]
 public class PlayerData
 {
@@ -10,10 +7,12 @@ public class PlayerData
     public int clickUpgradeID, nextUpgradeStorageAmount, nextUpgradeAutoSpeed; // какие прокачки куплены по кнопке, хранилищу и скорости, определяется по ИД прокачки
     public int currentPrestige, currentLvl, currentLevelProgress, requiredXP; // какой престиж, какой уровень, сколько накоплено для получения следущего уровня 
     public int globalAmountClicks;// сколько игрок накликал с первого запуска игры
+    public bool storeAvailable;
 
     public PlayerData()
     {
-        currentMultiplier = 18;
+        storeAvailable=false;
+        currentMultiplier = 1;
         //currentPrestige = 1;
         currentLvl = 1;
     }

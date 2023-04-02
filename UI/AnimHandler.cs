@@ -10,8 +10,21 @@ public class AnimHandler : MonoBehaviour
         if (animator.GetBool("Store"))
         {
             animator.SetBool("Store", false);
-        }else{
+        }
+        else
+        {
             animator.SetBool("Store", true);
+        }
+    }
+    public void OPenClosePrestige()
+    {
+        if (animator.GetBool("Prestige"))
+        {
+            animator.SetBool("Prestige", false);
+        }
+        else
+        {
+            animator.SetBool("Prestige", true);
         }
     }
 }
