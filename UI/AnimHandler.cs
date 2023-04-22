@@ -24,17 +24,17 @@ public class AnimHandler : MonoBehaviour
     {
         if (DataHandler.Instance.frenzy)
         {
-            if (bloom.intensity != 22)
+            if (bloom.intensity != 15)
             {
-                bloom.intensity.value = Mathf.Lerp(bloom.intensity.value, 22, Time.deltaTime * 2f);
+                bloom.intensity.value = Mathf.Lerp(bloom.intensity.value, 15, Time.deltaTime * 2f);
             }
-            if (aberration.intensity != 1)
+            if (aberration.intensity != .7f)
             {
-                aberration.intensity.value = Mathf.Lerp(aberration.intensity.value, 1, Time.deltaTime * 2f);
+                aberration.intensity.value = Mathf.Lerp(aberration.intensity.value, .7f, Time.deltaTime * 2f);
             }
-            if (distortion.intensity != 29)
+            if (distortion.intensity != 18)
             {
-                distortion.intensity.value = Mathf.Lerp(distortion.intensity.value, 29, Time.deltaTime * 2f);
+                distortion.intensity.value = Mathf.Lerp(distortion.intensity.value, 18, Time.deltaTime * 2f);
             }
         }
         else

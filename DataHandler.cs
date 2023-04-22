@@ -9,6 +9,7 @@ public class DataHandler : MonoBehaviour
     [SerializeField] float saveInterval = 12f;
     [SerializeField] string SaveName = "Save";
     public bool frenzy;
+    public bool doubleFrenzy;
     public static DataHandler Instance;
 
 public delegate void FilesAction();

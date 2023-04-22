@@ -5,8 +5,10 @@ public class Counter : MonoBehaviour
 {
     [Header("Bonus Multipliers")]
     bool levelUpBonus;
-    public float timeThreshold, frenzyBar;// frenzy bar is  invisible bar that can be filled by pressing button
-    int frenzyBonus, totalMultiplier;
+    public float frenzyThreshold = 0.8f;
+    private float lastClickTime, interval, frenzyCounter;
+    //public float timeThreshold, frenzyBar;// frenzy bar is  invisible bar that can be filled by pressing button
+    int totalMultiplier;
 
     [Header("Level Multipliers")]
     [Range(1, 500)]
@@ -32,21 +34,40 @@ public class Counter : MonoBehaviour
     // }
     void Update()
     {
-        timeThreshold += Time.deltaTime;
-        if (timeThreshold > .5f)
+        // timeThreshold += Time.deltaTime;
+        // if (timeThreshold > .5f)
+        // {
+        //     timeThreshold = 0;
+        //     frenzyBar -= .30f;
+        // }
+        // if (frenzyBar < 0) frenzyBar = 0;
+        // if (frenzyBar > 5) frenzyBar = 5;
+        // if (frenzyBar > 1.9f) DataHandler.Instance.frenzy = true;
+        // else DataHandler.Instance.frenzy = false;
+        interval = Time.time - lastClickTime;
+        if (interval > frenzyThreshold)
         {
-            timeThreshold = 0;
-            frenzyBar -= .30f;
+            frenzyCounter = 0;
         }
-        if (frenzyBar < 0) frenzyBar = 0;
-        if (frenzyBar > 5) frenzyBar = 5;
-        if (frenzyBar > 1.9f) DataHandler.Instance.frenzy = true;
-        else DataHandler.Instance.frenzy = false;
+
+        if (frenzyCounter <20)
+        {
+          DataHandler.Instance.frenzy = false;  
+          DataHandler.Instance.doubleFrenzy = false;
+        } 
+        else if(frenzyCounter > 60) DataHandler.Instance.doubleFrenzy = true;
+        else DataHandler.Instance.frenzy = true;
+
     }
     public void UpdateCounter()
     {
-        if (frenzyBar < 1) frenzyBar += .12f;
-        if (frenzyBar >= 1) frenzyBar += .22f;
+        interval = Time.time - lastClickTime;
+        if (interval < frenzyThreshold)
+        {
+            frenzyCounter++;
+        }
+        lastClickTime = Time.time;
+
         CalculateFormula();
         DataHandler.Instance.data.currentAmoutCliks += totalMultiplier;
         DataHandler.Instance.data.globalAmountClicks += totalMultiplier;
@@ -73,9 +94,9 @@ public class Counter : MonoBehaviour
             totalMultiplier += (int)(baseValue * 0.45f);
         }
         //if (frenzy bonus) add more frenzy points
-        if (frenzyBar > 3) totalMultiplier += (int)(baseValue * .35f);
+        if (frenzyCounter > 35) totalMultiplier += (int)(baseValue * .35f);
 
-        else if (frenzyBar > 1.8) totalMultiplier += (int)(baseValue * .7f);
+        else if (frenzyCounter > 70) totalMultiplier += (int)(baseValue * .7f);
     }
     void CalculatePrestigeBonus()
     {
@@ -162,7 +183,7 @@ public class Counter : MonoBehaviour
         // rint(x+1*(2^(x/8.3)))
 
         clickUpgrade = Mathf.FloorToInt(DataHandler.Instance.data.clickUpgradeID + 1 * Mathf.Pow(2, DataHandler.Instance.data.clickUpgradeID / 8.3f));
-         DataHandler.Instance.data.nextClicksAmount = clickUpgrade;
+        DataHandler.Instance.data.nextClicksAmount = clickUpgrade;
     }
     public void BuyClickMultiplier()
     {

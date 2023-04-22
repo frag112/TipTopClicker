@@ -60,6 +60,7 @@ public class UIHandler : MonoBehaviour
             storeIcon.enabled = true;
             DataHandler.Instance.data.storeAvailable = true;
         }
+        if (DataHandler.Instance.frenzy) ShowFrenzyBonus(true); else ShowFrenzyBonus(false);
     }
     void Start()
     {
@@ -68,11 +69,13 @@ public class UIHandler : MonoBehaviour
         UpdateCountersTexts();
         UpdateLevelText();
         UpdatePrestigeBonus();
+        if (DataHandler.Instance.data.currentMultiplier > 1) clickButtonText.text = "TIP X" + DataHandler.Instance.data.currentMultiplier;
         if (DataHandler.Instance.data.storeAvailable) storeIcon.enabled = true;
     }
     void UpdateStore()
     {
         upgradeClick.UpdateValues(DataHandler.Instance.data.nextUpgradeClicksCost, DataHandler.Instance.data.nextClicksAmount);
+        clickButtonText.text = "TIP X" + DataHandler.Instance.data.currentMultiplier;
     }
     void UpdateCountersTexts()
     {
@@ -105,6 +108,16 @@ public class UIHandler : MonoBehaviour
     public void ShowPermanentBonus()
     {
         //permanentBonus.SetActive(true);
+    }
+    public void ShowFrenzyBonus(bool state)
+    {
+        var textComponent = frenzyBonus.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        frenzyBonus.SetActive(state);
+        if (DataHandler.Instance.doubleFrenzy)
+        {
+            textComponent.text = "+70%";
+        }
+        else textComponent.text = "+35%";
     }
     void LevelUpdated()
     {
